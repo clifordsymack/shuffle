@@ -91,10 +91,13 @@ class Coin(object):
             sig_string = ecdsa.util.sigencode_string(r, s, order)
             compressed = len(vk) <= 66
             for recid in range(0,4):
-                pubk = MyVerifyingKey.from_signature(sig_string, recid, pre_hash, curve = SECP256k1)
-                pubkey = bh2u(point_to_ser(pubk.pubkey.point, compressed))
-                if vk == pubkey:
-                    return True
+                try:
+                    pubk = MyVerifyingKey.from_signature(sig_string, recid, pre_hash, curve = SECP256k1)
+                    pubkey = bh2u(point_to_ser(pubk.pubkey.point, compressed))
+                    if vk == pubkey:
+                        return True
+                except:
+                    continue    
         else:
             return False
 
