@@ -22,7 +22,8 @@ class Crypto(object):
         return bytes.hex(self.public_key)
 
     def encrypt(self, message, pubkey):
-        return self.eck.encrypt_message(message.encode('utf-8'), bytes.fromhex(pubkey))
+        res = self.eck.encrypt_message(message.encode('utf-8'), bytes.fromhex(pubkey))
+        return res.decode('utf-8')
 
     def decrypt(self, message):
         return self.eck.decrypt_message(message)
