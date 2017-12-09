@@ -149,6 +149,7 @@ class Plugin(BasePlugin):
             self.coinshuffle_text_output.setTextColor(QColor('black'))
 
     def start_coinshuffle_protocol(self):
+        print('protocol started')
         # from electroncash_plugins.coinshuffle.client import protocolThread
         from .client import protocolThread
         from electroncash.bitcoin import (regenerate_key, deserialize_privkey)
@@ -191,7 +192,9 @@ class Plugin(BasePlugin):
         pub_key = self.window.wallet.get_public_key(input_address)
         sk = regenerate_key(deserialize_privkey(priv_key[0])[1])
         self.pThread = protocolThread(server, port, self.window.network, amount, fee, sk, pub_key, output_address, change_address, logger = logger)
+        print('start thread')
         self.pThread.start()
+        print('thread started')
 
     def check_sufficient_ammount(self):
         coin_amount = self.coinshuffle_inputs.get_input_value()
