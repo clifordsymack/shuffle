@@ -217,7 +217,7 @@ class Plugin(BasePlugin):
         from .shuffle import ConsoleOutput
         from .shuffle import AmountSelect
 
-        self.coinshuffle_amounts = [1e4, 1e3]
+        self.coinshuffle_amounts = [1e7, 1e6]
         self.shuffle_grid = grid = QGridLayout()
         grid.setSpacing(8)
         grid.setColumnStretch(3, 1)
