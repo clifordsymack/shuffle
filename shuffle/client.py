@@ -24,7 +24,7 @@ class protocolThread(threading.Thread):
     """
     This class emulate thread with protocol run
     """
-    def __init__(self, host, port, network, amount, fee, sk, pubk, addr_new, change, logger = None):
+    def __init__(self, host, port, network, amount, fee, sk, pubk, addr_new, change, logger = None, ssl = False):
         threading.Thread.__init__(self)
         self.messages = Messages()
         self.income = Channel()
@@ -33,7 +33,7 @@ class protocolThread(threading.Thread):
             self.logger = ChannelWithPrint()
         else:
             self.logger = logger
-        self.commutator = Commutator(self.income, self.outcome)
+        self.commutator = Commutator(self.income, self.outcome, ssl = ssl)
 
         self.vk = pubk
         self.session = None

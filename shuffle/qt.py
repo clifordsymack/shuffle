@@ -34,7 +34,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
-from PyQt5.QtWidgets import (QVBoxLayout, QLabel, QGridLayout, QLineEdit, QHBoxLayout, QWidget)
+from PyQt5.QtWidgets import (QVBoxLayout, QLabel, QGridLayout, QLineEdit, QHBoxLayout, QWidget, QCheckBox)
 
 # from PyQt4.QtGui import *
 # from PyQt4.QtCore import *
@@ -64,6 +64,8 @@ class Plugin(BasePlugin):
     def __init__(self, parent, config, name):
         BasePlugin.__init__(self, parent, config, name)
         self.server = self.config.get('coinshuffleserver', '')
+        self.server_ssl = self.config.get('coinshufflessl')
+        print(self.server_ssl)
         self.window = None
         self.tab = None
         # will try to add parent functionality here
@@ -171,6 +173,7 @@ class Plugin(BasePlugin):
             server_params = self.window.config.get('coinshuffleserver').split(":")
             server = server_params[0]
             port = int(server_params[1])
+            ssl = self.window.config.get('coinshufflessl')
         except:
             self.coinshuffle_text_output.setText('Wrong server connection string')
             return
@@ -191,7 +194,7 @@ class Plugin(BasePlugin):
         priv_key = self.window.wallet.export_private_key(input_address, password)
         pub_key = self.window.wallet.get_public_key(input_address)
         sk = regenerate_key(deserialize_privkey(priv_key[0])[1])
-        self.pThread = protocolThread(server, port, self.window.network, amount, fee, sk, pub_key, output_address, change_address, logger = logger)
+        self.pThread = protocolThread(server, port, self.window.network, amount, fee, sk, pub_key, output_address, change_address, logger = logger, ssl = ssl)
         print('start thread')
         self.pThread.start()
         print('thread started')
@@ -273,9 +276,14 @@ class Plugin(BasePlugin):
         grid = QGridLayout()
         vbox.addLayout(grid)
         grid.addWidget(QLabel('server'), 0, 0)
+        grid.addWidget(QLabel('use SSL'), 1, 0)
         server_e = QLineEdit()
+        server_ssl_e = QCheckBox()
         server_e.setText(self.server)
+        server_ssl_e.setChecked(self.config.get('coinshufflessl'))
+        server_ssl_e.stateChanged.connect(lambda: self.config.set_key('coinshufflessl', server_ssl_e.isChecked()))
         grid.addWidget(server_e, 0, 1)
+        grid.addWidget(server_ssl_e, 1, 1)
 
         vbox.addStretch()
         vbox.addLayout(Buttons(CloseButton(d), OkButton(d)))
@@ -284,4 +292,6 @@ class Plugin(BasePlugin):
             return
 
         server = str(server_e.text())
+        # server_ssl = server_ssl_e.isChecked()
         self.config.set_key('coinshuffleserver', server)
+        # self.config.set_key('coinshufflessl', server_ssl)
